@@ -32,7 +32,7 @@ def render() -> None:
         "<div class='sb-header'>"
         "<span class='sb-icon-badge'><span data-lucide='hand' aria-hidden='true'></span></span>"
         "<span class='sb-title'>Hello</span></div>"
-        f"<div class='sb-hero'><small>Greeting</small><h1>Hello, {name}!</h1></div>"
+        f"<div class='sb-hero'><small>Greeting</small><h1>Hello, {name}! 👋</h1></div>"
         "<p class='sb-meta'>Change the name in the widget settings.</p>",
     )
 

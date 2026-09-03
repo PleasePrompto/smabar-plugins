@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "name": "Store Test",
+    "version": "1.0.0",
+    "author": "PleasePrompto",
+    "description": "A theme that exists to test the Community Store: teal accent on the default look."
+  },
+  "--sb-accent": "#2dd4bf"
+}

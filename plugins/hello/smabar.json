@@ -1,7 +1,7 @@
 {
   "id": "hello",
   "name": "Hello",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Greets you from the bar. The smallest complete smabar plugin, used to test the Community Store.",
   "protocolVersion": 1,
   "runtime": "python",
