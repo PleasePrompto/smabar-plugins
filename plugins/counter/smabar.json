@@ -1,0 +1,11 @@
+{
+  "id": "counter",
+  "name": "Counter",
+  "version": "0.1.0",
+  "description": "A number you bump from the flyout. Exercises actions and state; used to test the Community Store.",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "widgets": [{ "id": "counter", "name": "Counter", "hasFlyout": true }],
+  "store": { "keywords": ["example", "counter"], "os": ["linux", "windows"] }
+}
