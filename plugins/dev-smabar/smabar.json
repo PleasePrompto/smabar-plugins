@@ -1,0 +1,40 @@
+{
+  "id": "dev-smabar",
+  "name": "smabar Dev Kit",
+  "version": "1.0.0",
+  "description": "Every smabar UI-kit class and convention, live in one flyout: text, buttons, forms, data, charts, surfaces, lists, feedback, disclosure, overlays and icons. The reference for plugin authors and their agents.",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "kit",
+      "name": "UI Kit",
+      "hasFlyout": true
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "density": {
+        "type": "string",
+        "enum": [
+          "comfortable",
+          "compact"
+        ],
+        "description": "Vertical rhythm of the showcase",
+        "default": "comfortable"
+      }
+    },
+    "additionalProperties": false
+  },
+  "store": {
+    "keywords": [
+      "ui-kit",
+      "showcase",
+      "developer",
+      "reference",
+      "components"
+    ]
+  }
+}

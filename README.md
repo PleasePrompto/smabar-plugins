@@ -8,6 +8,7 @@ root covers all of them.
 | --- | --- |
 | `plugins/hello` | Greets you from the bar; one setting for the name. |
 | `plugins/counter` | A number you bump from the flyout. |
+| `plugins/dev-smabar` | smabar Dev Kit: every UI-kit class and convention, live in one flyout. The reference for plugin authors. |
 
 Themes live under `themes/<name>.json`; each file carries its own `meta` block.
 
