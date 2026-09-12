@@ -30,3 +30,5 @@ The hero prints how many distinct `sb-*` classes the page uses. Every button ans
 Read `plugin.py` and `kit_sections.py` next to the flyout: each section is the markup that produced it. With an agent connected over MCP, `plugin_guide` and `ui_kit` describe the same classes; this plugin is where you look at them.
 
 Python, no dependencies beyond the smabar SDK. MIT, see the repository root.
+
+#ui-kit #plugin-authoring #markup #agents
