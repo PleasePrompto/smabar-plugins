@@ -9,4 +9,10 @@ root covers all of them.
 | `plugins/hello` | Greets you from the bar; one setting for the name. |
 | `plugins/counter` | A number you bump from the flyout. |
 
-Submit the repository URL to the Community Store and every valid plugin is listed.
+Themes live under `themes/<name>.json`; each file carries its own `meta` block.
+
+| Theme | What it is |
+| --- | --- |
+| `themes/smabar-flat` | The smabar look as a flat top bar: brand yellow on cool near-black, square corners, Open Sans and Roboto Mono, plugins on the right. |
+
+Submit the repository URL to the Community Store and every valid plugin and theme is listed.
