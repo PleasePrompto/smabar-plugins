@@ -13,6 +13,7 @@ Settings › Design › Community Themes inside the app.
 | Plugin | What it does |
 | --- | --- |
 | [`plugins/dev-smabar`](plugins/dev-smabar) | smabar Dev Kit: every UI-kit class and convention, live in one flyout. The reference for plugin authors and their agents. |
+| [`plugins/ai-usage`](plugins/ai-usage) | AI Usage: Claude Code and Codex quota usage on the bar, read from the local CLIs — no API keys. |
 
 ## Themes
 

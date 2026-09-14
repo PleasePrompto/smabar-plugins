@@ -1,0 +1,31 @@
+{
+  "id": "ai-usage",
+  "name": "AI Usage",
+  "version": "0.4.0",
+  "description": "Claude Code and Codex quota usage at a glance — read from the local CLIs, no API keys",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "usage",
+      "name": "AI Usage",
+      "hasFlyout": true
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "claudeBinary": {
+        "type": "string",
+        "description": "Path to the Claude CLI; a bare name is looked up in PATH",
+        "default": "claude"
+      },
+      "claudeIntervalMinutes": {
+        "type": "number",
+        "description": "Minutes between Claude quota probes (each probe starts the CLI for a few seconds)",
+        "default": 15
+      }
+    }
+  }
+}
