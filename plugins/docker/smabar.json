@@ -1,0 +1,49 @@
+{
+  "id": "docker",
+  "name": "Docker",
+  "version": "1.0.0",
+  "description": "Your containers on the bar: what runs, what stopped, ports, and start/stop without a terminal — Docker Desktop, Docker Engine and Podman",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "containers",
+      "name": "Containers",
+      "hasFlyout": true,
+      "accent": "#2496ed"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "binary": {
+        "type": "string",
+        "description": "The container CLI: docker, podman, or a full path to one of them",
+        "default": "docker"
+      },
+      "refreshSeconds": {
+        "type": "number",
+        "description": "Seconds between refreshes of the container list (minimum 3)",
+        "default": 10
+      },
+      "showStats": {
+        "type": "boolean",
+        "description": "Read CPU and memory of running containers on every refresh (adds a one to two second stats call)",
+        "default": true
+      }
+    },
+    "additionalProperties": false
+  },
+  "store": {
+    "keywords": [
+      "docker",
+      "podman",
+      "containers",
+      "compose",
+      "devops",
+      "developer",
+      "local"
+    ]
+  }
+}
