@@ -1,0 +1,49 @@
+{
+  "id": "countdowns",
+  "name": "Countdowns",
+  "version": "1.0.0",
+  "description": "Days until the things you look forward to (or dread): holidays, launches, deadlines, birthdays",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "next",
+      "name": "Countdowns",
+      "hasFlyout": true,
+      "accent": "#8b7cf6",
+      "accent2": "#c084fc"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "keepPastDays": {
+        "type": "number",
+        "description": "How many days a passed one-time countdown stays in the list before it disappears",
+        "default": 3
+      },
+      "maxItems": {
+        "type": "number",
+        "description": "How many countdowns the flyout lists; the rest is shown as a count",
+        "default": 8
+      },
+      "notify": {
+        "type": "boolean",
+        "description": "Show a popup on the morning of an event",
+        "default": true
+      }
+    }
+  },
+  "store": {
+    "keywords": [
+      "countdown",
+      "events",
+      "calendar",
+      "deadline",
+      "birthday",
+      "holiday",
+      "reminder"
+    ]
+  }
+}
