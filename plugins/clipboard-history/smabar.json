@@ -1,0 +1,57 @@
+{
+  "id": "clipboard-history",
+  "name": "Clipboard History",
+  "version": "1.0.0",
+  "description": "Everything you copied as text, found again in one click — local, searchable, pinnable",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "clipboard",
+      "name": "Clipboard History",
+      "hasFlyout": true,
+      "accent": "#38bdf8"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "pollSeconds": {
+        "type": "number",
+        "minimum": 0.5,
+        "description": "Seconds between clipboard reads; 0.5 is the smallest value",
+        "default": 1
+      },
+      "maxChars": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Texts longer than this many characters are not recorded",
+        "default": 20000
+      },
+      "maxEntries": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "How many unpinned entries are kept; pinned entries do not count",
+        "default": 100
+      },
+      "paused": {
+        "type": "boolean",
+        "description": "Stop recording, for example while using a password manager; the flyout toggles this too",
+        "default": false
+      }
+    },
+    "additionalProperties": false
+  },
+  "store": {
+    "keywords": [
+      "clipboard",
+      "history",
+      "copy",
+      "paste",
+      "snippets",
+      "pin",
+      "productivity"
+    ]
+  }
+}
