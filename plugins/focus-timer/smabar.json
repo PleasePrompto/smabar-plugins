@@ -1,0 +1,67 @@
+{
+  "id": "focus-timer",
+  "name": "Focus Timer",
+  "version": "1.0.0",
+  "description": "Pomodoro focus timer on the bar: focus blocks, short and long breaks, a done popup with chime, today's totals and agent commands",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "timer",
+      "name": "Focus Timer",
+      "hasFlyout": true,
+      "accent": "#ef6a4c"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "focusMinutes": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 180,
+        "default": 25,
+        "description": "Length of a focus block in minutes"
+      },
+      "shortBreakMinutes": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 60,
+        "default": 5,
+        "description": "Length of a short break in minutes"
+      },
+      "longBreakMinutes": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 120,
+        "default": 15,
+        "description": "Length of the long break in minutes"
+      },
+      "longBreakEvery": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 12,
+        "default": 4,
+        "description": "A long break follows every this many focus blocks"
+      },
+      "sound": {
+        "type": "boolean",
+        "default": true,
+        "description": "Play a short chime when a phase ends"
+      }
+    },
+    "additionalProperties": false
+  },
+  "store": {
+    "keywords": [
+      "pomodoro",
+      "focus",
+      "timer",
+      "productivity",
+      "breaks",
+      "countdown",
+      "deep-work"
+    ]
+  }
+}
