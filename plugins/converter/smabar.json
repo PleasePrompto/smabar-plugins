@@ -1,0 +1,54 @@
+{
+  "id": "converter",
+  "name": "Converter",
+  "version": "1.0.0",
+  "description": "Currency and unit conversion in a flyout, with the live rate of a favourite pair on the tile — ECB rates via Frankfurter, no API key",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "convert",
+      "name": "Converter",
+      "hasFlyout": true,
+      "accent": "#34d399"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "baseCurrency": {
+        "type": "string",
+        "description": "ISO code the ECB table is fetched against (EUR, USD, GBP, …); every pair converts through that one table",
+        "default": "EUR"
+      },
+      "favoritePair": {
+        "type": "string",
+        "description": "Pair shown on the bar tile as FROM/TO, e.g. EUR/USD",
+        "default": "EUR/USD"
+      },
+      "decimals": {
+        "type": "number",
+        "description": "Decimal places of conversion results (0-10); tiny values keep three significant digits",
+        "default": 2
+      },
+      "refreshHours": {
+        "type": "number",
+        "description": "Hours between rate downloads (1-168); the ECB publishes once per working day",
+        "default": 12
+      }
+    },
+    "additionalProperties": false
+  },
+  "store": {
+    "keywords": [
+      "currency",
+      "exchange-rate",
+      "units",
+      "converter",
+      "ecb",
+      "metric",
+      "imperial"
+    ]
+  }
+}
