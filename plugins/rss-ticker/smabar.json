@@ -1,0 +1,53 @@
+{
+  "id": "rss-ticker",
+  "name": "RSS Ticker",
+  "version": "1.0.0",
+  "description": "Headlines from the feeds you choose, rotating on the bar, the full list one click away",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "news",
+      "name": "RSS Ticker",
+      "hasFlyout": true,
+      "accent": "#f97316"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "feeds": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Feed addresses (RSS 2.0, Atom or RSS 1.0/RDF), one per entry; the flyout adds and removes them too",
+        "default": []
+      },
+      "refreshMinutes": {
+        "type": "integer",
+        "minimum": 5,
+        "maximum": 1440,
+        "description": "Minutes between feed updates; 5 is the minimum",
+        "default": 15
+      },
+      "tileItems": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 20,
+        "description": "How many of the newest headlines rotate on the bar tile",
+        "default": 5
+      },
+      "maxPerFeed": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "How many items to keep per feed",
+        "default": 20
+      }
+    },
+    "additionalProperties": false
+  },
+  "store": {
+    "keywords": ["rss", "atom", "news", "feeds", "headlines", "ticker", "reader"]
+  }
+}
