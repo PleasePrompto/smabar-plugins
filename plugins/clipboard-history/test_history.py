@@ -2,15 +2,25 @@
 # requires-python = ">=3.12"
 # dependencies = []
 # ///
-"""Self-check for the history store and the markup helpers. Run: python3 test_history.py"""
+"""Self-check for the history store, the markup helpers and the clipboard watcher.
+
+Run: python3 test_history.py. On an X11 desktop with xsel the watcher check copies one
+line through the real clipboard and restores what was there before.
+"""
 
 import json
+import os
+import shutil
+import subprocess
 import sys
 import tempfile
+import threading
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 import views  # noqa: E402
+import watcher  # noqa: E402
 from model import History  # noqa: E402
 
 HERE = Path(__file__).parent
@@ -123,7 +133,7 @@ entries = [
     {"id": "a1", "text": "line one\nline two\nline three", "at": NOW - 120, "pinned": True},
     {"id": "b2", "text": "https://smabar.com/docs", "at": NOW - 5, "pinned": False},
 ]
-html = views.flyout(entries, 1, False, "", NOW, t)
+html = views.flyout(entries, 1, False, "", "", NOW, t)
 assert 'data-sb-copy-text="line one\nline two\nline three"' in html, "copy carries the full text"
 assert "3 lines · 28 chars" in html and "2 min ago" in html
 assert views.size_note("x" * 60, t) == "60 chars" and views.size_note("short", t) == ""
@@ -133,15 +143,15 @@ assert 'data-value="{&quot;id&quot;:&quot;a1&quot;,&quot;pinned&quot;:false}"' i
 assert 'class="sb-wrap sb-mono"' in html and 'data-sb-filter="#clip-list"' in html
 assert '<dialog class="sb-modal sb-modal--sm" id="clip-clear"' in html and "clip." not in html
 assert 'aria-label="Pause recording"' in html and "Removes 1 unpinned entries" in html
-assert "Paused" in views.flyout(entries, 1, True, "", NOW, t)
+assert "Paused" in views.flyout(entries, 1, True, "", "", NOW, t)
 
-empty = views.flyout([], 0, False, "", NOW, t)
+empty = views.flyout([], 0, False, "", "", NOW, t)
 assert "sb-empty" in empty and "data-sb-filter" not in empty and " disabled" in empty
-assert "Install xclip" in views.flyout([], 0, False, "Install xclip", NOW, t)
+assert "Install xclip" in views.flyout([], 0, False, "Install xclip", "", NOW, t)
 
 # The render budget: rows past ~700 KB are left out and counted.
 big = [{"id": str(i), "text": "x" * 300_000, "at": NOW, "pinned": False} for i in range(3)]
-capped = views.flyout(big, 3, False, "", NOW, t)
+capped = views.flyout(big, 3, False, "", "", NOW, t)
 assert capped.count('data-action="delete"') == 2 and "1 older entries are not shown" in capped
 
 tile_html = views.tile("first line\nsecond line of the copied text", False, "", t)
@@ -154,5 +164,22 @@ assert "Install wl-clipboard" in views.tile("x", False, "wl-clipboard", t)
 hover = views.hover(entries, False, NOW, t)
 assert hover.count("sb-row") == 2 and "just now" in hover and 'data-lucide="pin"' in hover
 assert "Empty" in views.hover([], False, NOW, t)
+
+# --- watcher: never reads the clipboard itself, signals on a real change (X11 with xsel only) ---
+if sys.platform == "linux":
+    env = dict(os.environ)
+    os.environ.pop("DISPLAY", None)
+    os.environ.pop("WAYLAND_DISPLAY", None)
+    assert watcher.start(lambda: None, lambda reason: None) == ""  # nothing to watch, no thread
+    os.environ.clear()
+    os.environ.update(env)
+if sys.platform == "linux" and os.environ.get("DISPLAY") and shutil.which("xsel"):
+    seen = threading.Event()
+    assert watcher.start(seen.set, lambda reason: None) == "XFixes"
+    before = subprocess.run(["xsel", "--clipboard", "--output"], capture_output=True).stdout
+    subprocess.run(["xsel", "--clipboard", "--input"], input=b"clipboard-history watcher check", check=True)
+    assert seen.wait(2.0), "no XFixes event within 2 s"
+    subprocess.run(["xsel", "--clipboard", "--input"], input=before, check=True)
+    time.sleep(0.3)  # let the running plugin, if any, read the restored text before the test ends
 
 print("ok")

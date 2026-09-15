@@ -1,7 +1,7 @@
 {
   "id": "clipboard-history",
   "name": "Clipboard History",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Everything you copied as text, found again in one click — local, searchable, pinnable",
   "protocolVersion": 1,
   "runtime": "python",
@@ -20,7 +20,7 @@
       "pollSeconds": {
         "type": "number",
         "minimum": 0.5,
-        "description": "Seconds between clipboard reads; 0.5 is the smallest value",
+        "description": "Seconds between clipboard reads on a system without change notifications; 0.5 is the smallest value",
         "default": 1
       },
       "maxChars": {

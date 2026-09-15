@@ -29,5 +29,7 @@
   "clip.daysAgo": "{n} d ago",
   "clip.size": "{lines} lines · {chars} chars",
   "clip.chars": "{chars} chars",
-  "clip.hidden": "{n} older entries are not shown"
+  "clip.hidden": "{n} older entries are not shown",
+  "clip.watching": "Change notifications via {via}",
+  "clip.polling": "This system offers no clipboard change notification; reading it every {seconds} s"
 }

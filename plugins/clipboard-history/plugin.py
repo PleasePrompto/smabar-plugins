@@ -1,22 +1,27 @@
 # /// script
 # requires-python = ">=3.12"
-# dependencies = []
+# dependencies = ["python-xlib>=0.33; sys_platform == 'linux'", "pyobjc-framework-Cocoa>=12; sys_platform == 'darwin'"]
 # ///
 """Clipboard History: everything you copied as text, found again in one click.
 
-The clipboard is polled every pollSeconds through clipboard.read_text() (one
-platform tool per OS, no daemon). New text goes to the top of model.History,
+watcher.start() signals every clipboard change (XFixes, wl-paste --watch, a change
+counter on Windows and macOS); on_signal() reads the text right then and queues it,
+and tick() records it on the handler thread, where all state lives. Without a
+watcher the clipboard is read every pollSeconds instead.
+New text goes to the top of model.History,
 which lives in app.data_dir/history.json and is written once per change.
 Pause stops recording and survives restarts as the `paused` setting. Nothing
 leaves the machine.
 """
 
 import json
+import queue
 import time
 from pathlib import Path
 
 import clipboard
 import views
+import watcher
 from model import History
 from smabar_sdk import Plugin
 
@@ -24,16 +29,30 @@ app = Plugin()
 
 TILE = "clipboard"
 HISTORY_FILE = "history.json"
-TICK_SECONDS = 0.5  # the smallest pollSeconds; tick() waits until the configured interval is due
+TICK_SECONDS = 0.5  # consumes the watcher's flag; also the smallest pollSeconds of the fallback
 RENDER_SECONDS = 60  # relative times ("2 min ago") are refreshed this often
+RECOPY_SECONDS = 3.0  # a re-copied entry moves up only after the button has shown its "copied" state
 DEFAULTS = {"pollSeconds": 1.0, "maxChars": 20000.0, "maxEntries": 100.0}
 MINIMUMS = {"pollSeconds": 0.5, "maxChars": 1.0, "maxEntries": 1.0}
-# ponytail: one clipboard read per poll inside the handler is fine at 1 s (a few ms on
-# every platform). The ceiling is a native watcher per platform (wl-paste --watch,
-# GetClipboardSequenceNumber, NSPasteboard.changeCount) if CPU ever shows.
-
 history = History(Path(HISTORY_FILE))  # re-pointed at app.data_dir in on_ready
-state: dict = {"last_seen": None, "error": "", "poll_due": 0.0, "render_due": 0.0}
+state: dict = {"last_seen": None, "error": "", "poll_due": 0.0, "render_due": 0.0, "watch": "", "lost": ""}
+# Filled on the watcher thread, drained by tick() on the handler thread, where all state lives.
+changes: queue.Queue[str | None | clipboard.ClipboardError] = queue.Queue()
+
+
+def on_signal() -> None:
+    """Watcher thread: reads at once, so a text replaced within the same tick is kept too."""
+    if paused():
+        return
+    try:
+        changes.put(clipboard.read_text())
+    except clipboard.ClipboardError as exc:
+        changes.put(exc)
+
+
+def watcher_lost(reason: str) -> None:
+    """Watcher thread: tick() reports it and switches to polling."""
+    state["lost"] = reason
 
 
 def number(key: str) -> float:
@@ -50,16 +69,27 @@ def paused() -> bool:
     return app.settings.get("paused") is True
 
 
-def render() -> None:
-    entries = history.ordered()
-    now = int(time.time())
+def render_bar() -> None:
+    """Tile and hover only; the flyout keeps its current DOM."""
     latest = history.entries[0]["text"] if history.entries else None
     app.render(TILE, "tile", views.tile(latest, paused(), clipboard.MISSING_TOOL, app.t))
-    app.render(TILE, "hover", views.hover(entries, paused(), now, app.t))
+    app.render(TILE, "hover", views.hover(history.ordered(), paused(), int(time.time()), app.t))
+
+
+def render() -> None:
+    render_bar()
+    if clipboard.MISSING_TOOL:
+        status = ""
+    elif state["watch"]:
+        status = views.tr(app.t, "clip.watching", via=state["watch"])
+    else:
+        status = views.tr(app.t, "clip.polling", seconds=f"{number('pollSeconds'):g}")
     app.render(
         TILE,
         "flyout",
-        views.flyout(entries, history.unpinned(), paused(), state["error"], now, app.t),
+        views.flyout(
+            history.ordered(), history.unpinned(), paused(), state["error"], status, int(time.time()), app.t
+        ),
     )
     state["render_due"] = time.monotonic() + RENDER_SECONDS
 
@@ -92,27 +122,34 @@ def baseline() -> None:
 
 
 def poll() -> None:
-    """One clipboard read; new text goes to the top of the history."""
+    """Without a watcher: one clipboard read every pollSeconds."""
     try:
-        text = clipboard.read_text()
+        record(clipboard.read_text())
     except clipboard.ClipboardError as exc:
         fail(f"{app.t('clip.readError')}: {exc}")
-        return
+
+
+def record(text: str | None) -> None:
+    """A clipboard reading; new text goes to the top of the history."""
     if state["error"]:
         state["error"] = ""
         render()
     if text == state["last_seen"]:
         return
     state["last_seen"] = text
-    if text is not None:
-        commit(
-            history.add(
-                text,
-                int(time.time()),
-                max_chars=int(number("maxChars")),
-                max_entries=int(number("maxEntries")),
-            )
-        )
+    if text is None:
+        return
+    known = any(item["text"] == text for item in history.entries)
+    if not history.add(text, int(time.time()), max_chars=int(number("maxChars")), max_entries=int(number("maxEntries"))):
+        return
+    history.save()
+    if not known:
+        render()
+        return
+    # A known text is usually one copied back from our own flyout: re-rendering the
+    # flyout at once would replace the button mid "copied" state and move the row away.
+    render_bar()
+    state["render_due"] = min(state["render_due"], time.monotonic() + RECOPY_SECONDS)
 
 
 @app.on_ready
@@ -128,20 +165,40 @@ def ready() -> None:
     if clipboard.MISSING_TOOL:
         state["error"] = views.tr(app.t, "clip.installHint", tool=clipboard.MISSING_TOOL)
         app.log("warn", "no clipboard reader found", install=clipboard.MISSING_TOOL)
-    elif not paused():
-        baseline()
+    else:
+        if not paused():
+            baseline()
+        state["watch"] = watcher.start(on_signal, watcher_lost)
+        if state["watch"]:
+            app.log("info", "clipboard change notifications", via=state["watch"])
+        else:
+            app.log("warn", "no clipboard change notification on this system; reading every pollSeconds")
     render()
 
 
 @app.every(TICK_SECONDS)
 def tick() -> None:
     now = time.monotonic()
+    if state["lost"]:
+        app.log("warn", "clipboard watcher stopped; reading every pollSeconds", reason=state["lost"])
+        state["lost"], state["watch"] = "", ""
+        render()
     if now >= state["render_due"]:
         render()
-    if clipboard.MISSING_TOOL or paused() or now < state["poll_due"]:
+    while True:  # readings the watcher queued since the last tick, oldest first
+        try:
+            item = changes.get_nowait()
+        except queue.Empty:
+            break
+        if isinstance(item, clipboard.ClipboardError):
+            fail(f"{app.t('clip.readError')}: {item}")
+        else:
+            record(item)
+    if clipboard.MISSING_TOOL or paused():
         return
-    state["poll_due"] = now + number("pollSeconds")
-    poll()
+    if not state["watch"] and now >= state["poll_due"]:
+        state["poll_due"] = now + number("pollSeconds")
+        poll()
 
 
 @app.on_settings_changed

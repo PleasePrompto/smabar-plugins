@@ -218,10 +218,11 @@ def row(entry: dict, now: int, t: Translator) -> str:
 
 
 def flyout(
-    entries: list[dict], unpinned: int, paused: bool, error: str, now: int, t: Translator
+    entries: list[dict], unpinned: int, paused: bool, error: str, status: str, now: int, t: Translator
 ) -> str:
-    """Header with actions, the confirm dialog, an optional error, the searchable list."""
+    """Header with actions, the confirm dialog, an optional error, the searchable list, the status line."""
     parts = [header(len(entries), unpinned, paused, t), clear_dialog(unpinned, t)]
+    footer = f'<p class="sb-meta">{escape(status)}</p>' if status else ""
     if error:
         parts.append(
             f'<div class="sb-alert sb-alert--danger" role="alert">{icon("triangle-alert")}'
@@ -233,7 +234,7 @@ def flyout(
             f'<span class="sb-empty__title">{escape(t("clip.emptyTitle"))}</span>'
             f'<span class="sb-empty__text">{escape(t("clip.emptyText"))}</span></div>'
         )
-        return "".join(parts)
+        return "".join(parts) + footer
     parts.append(
         f'<input class="sb-input" type="search" data-field="q" data-sb-filter="#{LIST_ID}"'
         f' placeholder="{escape(t("clip.searchPlaceholder"), quote=True)}"'
@@ -254,4 +255,4 @@ def flyout(
     )
     if len(rows) < len(entries):
         parts.append(f'<p class="sb-meta">{escape(tr(t, "clip.hidden", n=len(entries) - len(rows)))}</p>')
-    return "".join(parts)
+    return "".join(parts) + footer

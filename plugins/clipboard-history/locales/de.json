@@ -29,5 +29,7 @@
   "clip.daysAgo": "vor {n} Tg.",
   "clip.size": "{lines} Zeilen · {chars} Zeichen",
   "clip.chars": "{chars} Zeichen",
-  "clip.hidden": "{n} ältere Einträge werden nicht angezeigt"
+  "clip.hidden": "{n} ältere Einträge werden nicht angezeigt",
+  "clip.watching": "Änderungsmeldungen über {via}",
+  "clip.polling": "Dieses System meldet Änderungen der Zwischenablage nicht; sie wird alle {seconds} s gelesen"
 }
