@@ -31,5 +31,7 @@
   "clip.chars": "{chars} Zeichen",
   "clip.hidden": "{n} ältere Einträge werden nicht angezeigt",
   "clip.watching": "Änderungsmeldungen über {via}",
-  "clip.polling": "Dieses System meldet Änderungen der Zwischenablage nicht; sie wird alle {seconds} s gelesen"
+  "clip.polling": "Dieses System meldet Änderungen der Zwischenablage nicht; sie wird alle {seconds} s gelesen",
+  "clip.copied": "In die Zwischenablage kopiert",
+  "clip.copyFailed": "Die Zwischenablage konnte nicht beschrieben werden"
 }

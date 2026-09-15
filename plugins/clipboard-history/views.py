@@ -197,13 +197,11 @@ def row(entry: dict, now: int, t: Translator) -> str:
     meta = " · ".join(part for part in (relative_time(entry["at"], now, t), size_note(text, t)) if part)
     pinned = entry["pinned"]
     mono = " sb-mono" if looks_like_code(text) else ""
-    copy_label = escape(t("clip.copy"), quote=True)
     return (
         f'<tr><td><span class="sb-wrap{mono}">{preview(text)}</span>'
         f'<div class="sb-meta">{icon("pin") + " " if pinned else ""}{escape(meta)}</div></td>'
         '<td class="sb-table__num"><span class="sb-inline">'
-        f'<button type="button" class="sb-btn sb-btn-ghost sb-btn-icon" data-sb-copy-text="{escape(text, quote=True)}"'
-        f' title="{copy_label}" aria-label="{copy_label}">{icon("copy")}</button>'
+        + action("copy", t("clip.copy"), entry["id"], symbol="copy", icon_only=True)
         + action(
             "pin",
             t("clip.unpin" if pinned else "clip.pin"),
@@ -214,6 +212,15 @@ def row(entry: dict, now: int, t: Translator) -> str:
         )
         + action("delete", t("clip.delete"), entry["id"], symbol="trash-2", icon_only=True)
         + "</span></td></tr>"
+    )
+
+
+def toast(flavor: str, title: str, text: str) -> str:
+    """A kit toast for the popup surface: flavor is ok, info, warn or danger."""
+    return (
+        f'<div class="sb-toast sb-toast--{escape(flavor)}"><div>'
+        f'<div class="sb-toast__title">{escape(title)}</div>'
+        f'<div class="sb-toast__text">{escape(text)}</div></div></div>'
     )
 
 

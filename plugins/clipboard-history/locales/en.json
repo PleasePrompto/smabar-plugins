@@ -31,5 +31,7 @@
   "clip.chars": "{chars} chars",
   "clip.hidden": "{n} older entries are not shown",
   "clip.watching": "Change notifications via {via}",
-  "clip.polling": "This system offers no clipboard change notification; reading it every {seconds} s"
+  "clip.polling": "This system offers no clipboard change notification; reading it every {seconds} s",
+  "clip.copied": "Copied to clipboard",
+  "clip.copyFailed": "The clipboard could not be written"
 }

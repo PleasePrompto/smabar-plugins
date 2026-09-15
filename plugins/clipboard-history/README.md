@@ -13,7 +13,7 @@ Everything you copied as text, found again in one click. The bar shows the lates
 
 ## Requirements
 
-- Linux: `wl-clipboard` (`wl-paste`) on Wayland, `xclip` or `xsel` on X11 to read the text. Without one of them the tile shows `Install …` and the flyout says which package is missing. Change notifications come from the X server (XFixes, also under XWayland) or from `wl-paste --watch` on compositors with the data-control protocol (Sway, Hyprland, KDE); `python-xlib` is fetched automatically.
+- Linux: `wl-clipboard` (`wl-paste`, `wl-copy`) on Wayland, `xclip` or `xsel` on X11 to read and write the text. Without one of them the tile shows `Install …` and the flyout says which package is missing. Change notifications come from the X server (XFixes, also under XWayland) or from `wl-paste --watch` on compositors with the data-control protocol (Sway, Hyprland, KDE); `python-xlib` is fetched automatically.
 - macOS: nothing to install; `pbpaste` ships with the system and `pyobjc-framework-Cocoa` is fetched automatically for the change counter.
 - Windows: nothing, the clipboard is read through the Win32 API.
 
@@ -23,7 +23,7 @@ Everything you copied as text, found again in one click. The bar shows the lates
 - Without any watcher (GNOME on Wayland without XWayland, for example) the plugin falls back to reading the clipboard every `pollSeconds`. The flyout's last line says which mode is active.
 - New text goes to the top of the history. Copying something that is already in the history moves it to the top instead of adding a duplicate. Whitespace-only text and texts longer than `maxChars` are ignored.
 - The history keeps `maxEntries` unpinned entries; the oldest unpinned entry falls off first. Pinned entries do not count and never fall off.
-- The copy button hands the full text to the bar, which puts it on the clipboard. Copying an entry back moves it to the top; the flyout follows a few seconds later so the row does not jump away under the pointer.
+- The copy button asks the plugin to write the clipboard itself (`wl-copy`, `xclip`, `xsel`, `pbcopy` or `SetClipboardData` on Windows) and shows a short toast. Copying an entry back moves it to the top; the flyout follows a few seconds later so the row does not jump away under the pointer.
 - Relative times in the flyout are refreshed once a minute.
 
 Agents can drive the history over MCP with `plugin_call`: `list` (optional `query`, `limit`), `get` (full text), `pin`, `delete`, `clear` and `pause`.

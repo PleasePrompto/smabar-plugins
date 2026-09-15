@@ -134,7 +134,7 @@ entries = [
     {"id": "b2", "text": "https://smabar.com/docs", "at": NOW - 5, "pinned": False},
 ]
 html = views.flyout(entries, 1, False, "", "", NOW, t)
-assert 'data-sb-copy-text="line one\nline two\nline three"' in html, "copy carries the full text"
+assert 'data-action="copy"' in html and f'data-value="{entries[0]["id"]}"' in html, "copy is a plugin action"
 assert "3 lines · 28 chars" in html and "2 min ago" in html
 assert views.size_note("x" * 60, t) == "60 chars" and views.size_note("short", t) == ""
 assert 'aria-pressed="true"' in html and html.count('data-lucide="pin"') == 3, "pinned rows carry a pin glyph"
@@ -149,9 +149,11 @@ empty = views.flyout([], 0, False, "", "", NOW, t)
 assert "sb-empty" in empty and "data-sb-filter" not in empty and " disabled" in empty
 assert "Install xclip" in views.flyout([], 0, False, "Install xclip", "", NOW, t)
 
-# The render budget: rows past ~700 KB are left out and counted.
-big = [{"id": str(i), "text": "x" * 300_000, "at": NOW, "pinned": False} for i in range(3)]
+# The render budget: rows past FLYOUT_BUDGET bytes are left out and counted.
+big = [{"id": str(i), "text": f"entry {i}", "at": NOW, "pinned": False} for i in range(3)]
+full_budget, views.FLYOUT_BUDGET = views.FLYOUT_BUDGET, 2 * len(views.row(big[0], NOW, t).encode("utf-8")) + 8
 capped = views.flyout(big, 3, False, "", "", NOW, t)
+views.FLYOUT_BUDGET = full_budget
 assert capped.count('data-action="delete"') == 2 and "1 older entries are not shown" in capped
 
 tile_html = views.tile("first line\nsecond line of the copied text", False, "", t)
@@ -179,6 +181,10 @@ if sys.platform == "linux" and os.environ.get("DISPLAY") and shutil.which("xsel"
     before = subprocess.run(["xsel", "--clipboard", "--output"], capture_output=True).stdout
     subprocess.run(["xsel", "--clipboard", "--input"], input=b"clipboard-history watcher check", check=True)
     assert seen.wait(2.0), "no XFixes event within 2 s"
+    import clipboard
+
+    clipboard.write_text("clipboard-history write check")  # the plugin's own writer, then read back
+    assert clipboard.read_text() == "clipboard-history write check"
     subprocess.run(["xsel", "--clipboard", "--input"], input=before, check=True)
     time.sleep(0.3)  # let the running plugin, if any, read the restored text before the test ends
 

@@ -31,7 +31,8 @@ TILE = "clipboard"
 HISTORY_FILE = "history.json"
 TICK_SECONDS = 0.5  # consumes the watcher's flag; also the smallest pollSeconds of the fallback
 RENDER_SECONDS = 60  # relative times ("2 min ago") are refreshed this often
-RECOPY_SECONDS = 3.0  # a re-copied entry moves up only after the button has shown its "copied" state
+RECOPY_SECONDS = 3.0  # a re-copied entry moves up only after the toast has confirmed the copy
+TOAST_MS = 1500
 DEFAULTS = {"pollSeconds": 1.0, "maxChars": 20000.0, "maxEntries": 100.0}
 MINIMUMS = {"pollSeconds": 0.5, "maxChars": 1.0, "maxEntries": 1.0}
 history = History(Path(HISTORY_FILE))  # re-pointed at app.data_dir in on_ready
@@ -214,6 +215,24 @@ def settings_changed(settings: dict) -> None:
 def on_pause(action: str, value: object) -> None:
     # set_settings REPLACES the whole settings object; settings_changed() renders.
     app.set_settings({**app.settings, "paused": value is True or value == "true"})
+
+
+@app.on_action(TILE, "copy")
+def on_copy(action: str, value: object) -> None:
+    """The plugin writes the clipboard itself: the bar's copy hook depends on the webview
+    still holding the click's user gesture, which WebKitGTK often drops before the write."""
+    entry = history.get(str(value))
+    if entry is None:
+        return
+    try:
+        clipboard.write_text(entry["text"])
+    except clipboard.ClipboardError as exc:
+        app.log("warn", "clipboard write failed", error=str(exc))
+        app.render(TILE, "popup", views.toast("danger", app.t("clip.copyFailed"), str(exc)), ttl_ms=4000)
+        return
+    app.render(
+        TILE, "popup", views.toast("ok", app.t("clip.copied"), views.one_line(entry["text"], 60)), ttl_ms=TOAST_MS
+    )
 
 
 @app.on_action(TILE, "pin")
