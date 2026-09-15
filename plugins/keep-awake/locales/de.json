@@ -1,0 +1,22 @@
+{
+  "awake.title": "Wach bleiben",
+  "awake.on": "An",
+  "awake.off": "Aus",
+  "awake.switch": "Bildschirm und Rechner bleiben wach",
+  "awake.offHint": "Bildschirm und Rechner folgen deinen normalen Energieeinstellungen.",
+  "awake.duration": "Dauer",
+  "awake.startFor": "Einschalten für",
+  "awake.minutes": "{n} Min.",
+  "awake.hours": "{n} Std.",
+  "awake.untilOff": "Bis zum Ausschalten",
+  "awake.endsAt": "Endet um {time}",
+  "awake.untilSwitchedOff": "Bis du es ausschaltest",
+  "awake.mechanism": "Gehalten über {mechanism}",
+  "awake.startsOff": "Nach jedem Neustart aus. Nichts wird gemerkt.",
+  "awake.hoverOn": "Wach bleiben · noch {minutes} Min. an",
+  "awake.hoverUntilOff": "Wach bleiben · an bis zum Ausschalten",
+  "awake.hoverOff": "Wach bleiben · aus",
+  "awake.ended": "Wach bleiben beendet",
+  "awake.endedText": "Bildschirm und Rechner dürfen wieder schlafen.",
+  "awake.errorTitle": "Rechner konnte nicht wach gehalten werden"
+}

@@ -1,0 +1,42 @@
+{
+  "id": "keep-awake",
+  "name": "Keep Awake",
+  "version": "1.0.0",
+  "description": "One switch that keeps the screen on and the computer from sleeping — for a presentation, a long download or a build",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "awake",
+      "name": "Keep Awake",
+      "hasFlyout": true,
+      "accent": "#2dd4bf"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "defaultMinutes": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 1440,
+        "default": 60,
+        "description": "How many minutes the switch and the on command keep the computer awake; 0 means until you switch it off"
+      }
+    },
+    "additionalProperties": false
+  },
+  "store": {
+    "keywords": [
+      "caffeine",
+      "keep-awake",
+      "sleep",
+      "screensaver",
+      "presentation",
+      "inhibit",
+      "power",
+      "display"
+    ]
+  }
+}

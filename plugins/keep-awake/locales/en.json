@@ -1,0 +1,22 @@
+{
+  "awake.title": "Keep Awake",
+  "awake.on": "On",
+  "awake.off": "Off",
+  "awake.switch": "Screen and computer stay awake",
+  "awake.offHint": "The screen and the computer follow your normal power settings.",
+  "awake.duration": "Duration",
+  "awake.startFor": "Turn on for",
+  "awake.minutes": "{n} min",
+  "awake.hours": "{n} h",
+  "awake.untilOff": "Until off",
+  "awake.endsAt": "Ends at {time}",
+  "awake.untilSwitchedOff": "Until you switch it off",
+  "awake.mechanism": "Held via {mechanism}",
+  "awake.startsOff": "Always off after a restart. Nothing is remembered.",
+  "awake.hoverOn": "Keep Awake · on for {minutes} more min",
+  "awake.hoverUntilOff": "Keep Awake · on until switched off",
+  "awake.hoverOff": "Keep Awake · off",
+  "awake.ended": "Keep Awake ended",
+  "awake.endedText": "The screen and the computer may sleep again.",
+  "awake.errorTitle": "Could not keep the computer awake"
+}
