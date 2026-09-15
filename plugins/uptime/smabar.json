@@ -1,0 +1,69 @@
+{
+  "id": "uptime",
+  "name": "Uptime",
+  "version": "1.0.0",
+  "description": "Is it up? Your own sites, servers and services, checked from your machine, with a popup the moment one goes down",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "status",
+      "name": "Uptime",
+      "hasFlyout": true,
+      "accent": "#22c55e"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "targets": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Targets as \"Name | target\" or just the target: https://…, http://…, tcp://host:port or ping:host. Easier to edit in the flyout.",
+        "default": []
+      },
+      "intervalSeconds": {
+        "type": "integer",
+        "minimum": 15,
+        "maximum": 86400,
+        "description": "Seconds between check rounds",
+        "default": 60
+      },
+      "timeoutSeconds": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 60,
+        "description": "Seconds a single check may take before it counts as a timeout",
+        "default": 5
+      },
+      "failuresBeforeDown": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "Consecutive failed checks before a target counts as down and the popup appears",
+        "default": 2
+      },
+      "historySize": {
+        "type": "integer",
+        "minimum": 5,
+        "maximum": 1000,
+        "description": "Checks kept per target for the uptime percentage and the latency sparkline",
+        "default": 60
+      }
+    },
+    "additionalProperties": false
+  },
+  "store": {
+    "keywords": [
+      "uptime",
+      "monitoring",
+      "status",
+      "ping",
+      "http",
+      "server",
+      "latency",
+      "alerts"
+    ]
+  }
+}
