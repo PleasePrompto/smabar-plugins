@@ -1,0 +1,61 @@
+{
+  "id": "next-meeting",
+  "name": "Next Meeting",
+  "version": "1.0.0",
+  "description": "Your next appointment on the bar, from any calendar with an ICS address (Google, Outlook, iCloud, Nextcloud, Fastmail) — no OAuth, no API key",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "meeting",
+      "name": "Next Meeting",
+      "hasFlyout": true,
+      "accent": "#3b82f6"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "calendars": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "ICS addresses (the secret iCal/ICS URL of a calendar, webcal:// works too) or paths to local .ics files, comma-separated",
+        "default": []
+      },
+      "refreshMinutes": {
+        "type": "number",
+        "description": "Minutes between calendar fetches",
+        "default": 10
+      },
+      "remindMinutes": {
+        "type": "number",
+        "description": "Popup this many minutes before an event starts; 0 switches reminders off",
+        "default": 5
+      },
+      "lookaheadDays": {
+        "type": "number",
+        "description": "How many days ahead the flyout and the agent commands list",
+        "default": 7
+      },
+      "showAllDay": {
+        "type": "boolean",
+        "description": "Show all-day events",
+        "default": true
+      }
+    },
+    "additionalProperties": false
+  },
+  "store": {
+    "keywords": [
+      "calendar",
+      "meeting",
+      "ics",
+      "ical",
+      "agenda",
+      "reminder",
+      "google-calendar",
+      "outlook"
+    ]
+  }
+}
