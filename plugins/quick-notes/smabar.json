@@ -1,0 +1,32 @@
+{
+  "id": "quick-notes",
+  "name": "Quick Notes",
+  "version": "1.0.0",
+  "description": "A scratchpad on the bar: jot a note in two seconds and find it again later — plain Markdown files you can open in any editor",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "notes",
+      "name": "Quick Notes",
+      "hasFlyout": true,
+      "accent": "#f2c94c"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "properties": {
+      "tileMode": {
+        "type": "string",
+        "enum": ["pinned", "latest", "count"],
+        "description": "What the bar tile shows: the pinned note's title (or the latest one), always the latest note, or the number of notes",
+        "default": "pinned"
+      }
+    },
+    "additionalProperties": false
+  },
+  "store": {
+    "keywords": ["notes", "scratchpad", "markdown", "obsidian", "memo", "clipboard", "text"]
+  }
+}
