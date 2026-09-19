@@ -3,8 +3,8 @@
 Every function returns an HTML string that plugin.py pushes with app.render.
 Nothing here imports the SDK, so the markup can be rendered and inspected
 without a running bar. Only documented sb-* classes, data-* hooks and kit
-tokens are used; inline styles carry only data values, the kit's heroTint
-tokens and a max-width cap on a sparkline. All external text -
+tokens are used; inline styles carry only data values and the kit's heroTint
+tokens. All external text -
 symbols, instrument names, provider errors - goes through html.escape first.
 
 Flyout structure, in the order a new user meets it:
@@ -14,8 +14,9 @@ Flyout structure, in the order a new user meets it:
   Holdings        hero + KPIs side by side, then the position table.
                   With nothing held it is an empty state WITH a button that
                   jumps straight to the Add tab.
-  Watchlist       quotes without a holding, each with a one-click route into
-                  the portfolio.
+  Watchlist       a table of quotes without a holding: symbol, intraday
+                  trend, price over its day change, and a one-click route
+                  into the portfolio.
   Add             a two-step flow: find the instrument, then say how much you
                   own - or follow it without owning it.
 """
@@ -125,19 +126,29 @@ def _name(text: str, limit: int = 20) -> str:
     return f'<small class="sb-faint" title="{_q(text)}">{escape(short)}</small>'
 
 
-def _spark(
-    points: str, label: str, extra: str = "sb-accent", max_rem: float | None = None
-) -> str:
-    """`max_rem` caps the width where the sparkline is a flex item and would
-    otherwise grow into its neighbours (the watchlist rows)."""
+def _spark(points: str, label: str, extra: str = "sb-accent") -> str:
     if not points:
         return ""
     classes = f"sb-spark {extra}".strip()
-    width = f' style="max-width: {max_rem:g}rem"' if max_rem else ""
     return (
         f'<span class="{classes}" data-chart="sparkline" data-points="{_q(points)}"'
-        f' role="img" aria-label="{_q(label)}"{width}></span>'
+        f' role="img" aria-label="{_q(label)}"></span>'
     )
+
+
+def _sortable(label: str, numeric: bool = False) -> str:
+    """A table header the shell can sort by (data-sb-sort)."""
+    kind = '="number"' if numeric else ""
+    classes = ' class="sb-table__num"' if numeric else ""
+    return (
+        f'<th scope="col"{classes} data-sb-sort{kind}>'
+        f'<button type="button" class="sb-table__sort">{escape(label)}</button></th>'
+    )
+
+
+def _sr_header(label: str) -> str:
+    """A column whose header is only read out, not shown (trend, actions)."""
+    return f'<th scope="col"><span class="sb-sr-only">{escape(label)}</span></th>'
 
 
 def _button(
@@ -537,23 +548,14 @@ def _position_table(rows: list[dict], cfg: dict, t: Translator, lang: str) -> st
     the flyout's width instead of turning into a spreadsheet.
     """
     base = cfg["baseCurrency"]
-
-    def sortable(label: str, numeric: bool = False) -> str:
-        kind = '="number"' if numeric else ""
-        classes = ' class="sb-table__num"' if numeric else ""
-        return (
-            f'<th scope="col"{classes} data-sb-sort{kind}>'
-            f'<button type="button" class="sb-table__sort">{escape(label)}</button></th>'
-        )
-
     head = (
         "<thead><tr>"
-        + sortable(t("sp.colPosition"))
+        + _sortable(t("sp.colPosition"))
         + f'<th scope="col" class="sb-table__num">{escape(t("sp.colHolding"))}</th>'
-        + sortable(t("sp.colValue"), numeric=True)
-        + sortable(t("sp.colDay"), numeric=True)
-        + sortable(t("sp.colGain"), numeric=True)
-        + f'<th scope="col"><span class="sb-sr-only">{escape(t("sp.colActions"))}</span></th>'
+        + _sortable(t("sp.colValue"), numeric=True)
+        + _sortable(t("sp.colDay"), numeric=True)
+        + _sortable(t("sp.colGain"), numeric=True)
+        + _sr_header(t("sp.colActions"))
         + "</tr></thead>"
     )
 
@@ -684,7 +686,7 @@ def _portfolio_panel(
 def _watch_row(
     symbol: str, quote: dict | None, data: dict, t: Translator, lang: str
 ) -> str:
-    """One watched quote, with the one-click route into the portfolio."""
+    """One watched quote: symbol, trend, price over its day change, actions."""
     controls = _button(
         "pick",
         tr(t, "sp.buyThis", symbol=symbol),
@@ -698,27 +700,27 @@ def _watch_row(
         symbol="x",
         icon_only=True,
     )
+    who = (
+        f'<td><span class="sb-table__person">{_avatar(symbol)}'
+        f'<span><b>{escape(symbol)}</b><br>{_name((quote or {}).get("name") or symbol)}'
+        "</span></span></td>"
+    )
     if not quote:
         return (
-            f'<div class="sb-row">{_avatar(symbol)}<b>{escape(symbol)}</b>'
-            f'<span class="sb-push"><span class="sb-badge sb-badge-warning">'
-            f'{escape(t("sp.noQuote"))}</span></span>{controls}</div>'
+            f"<tr>{who}<td></td>"
+            f'<td class="sb-table__num"><span class="sb-badge sb-badge-warning">'
+            f'{escape(t("sp.noQuote"))}</span></td><td>{controls}</td></tr>'
         )
     _, pct = portfolio.quote_change(quote)
     points = quote.get("points") or data["series"].get(symbol) or []
     spark = _spark(
-        portfolio.spark_points(points),
-        tr(t, "sp.symbolSpark", symbol=symbol),
-        max_rem=5,
+        portfolio.spark_points(points), tr(t, "sp.symbolSpark", symbol=symbol)
     )
-    # The sparkline is its own row item (width capped in _spark); price and
-    # badge share one cluster at the end, so neither gets squeezed.
+    price = portfolio.fmt_price(quote.get("price"), quote.get("currency"), lang)
     return (
-        f'<div class="sb-row">{_avatar(symbol)}'
-        f'<span><b>{escape(symbol)}</b><br>{_name(quote.get("name") or symbol)}</span>'
-        f'{spark}<span class="sb-inline sb-push"><span class="sb-mono">'
-        f'{escape(portfolio.fmt_price(quote.get("price"), quote.get("currency"), lang))}'
-        f"</span>{change_badge(pct, lang)}</span>{controls}</div>"
+        f"<tr>{who}<td>{spark}</td>"
+        f'<td class="sb-table__num"><span class="sb-mono">{escape(price)}</span><br>'
+        f"{change_badge(pct, lang)}</td><td>{controls}</td></tr>"
     )
 
 
@@ -740,8 +742,21 @@ def _watchlist_panel(data: dict, cfg: dict, t: Translator, lang: str) -> str:
         _watch_row(symbol, data["quotes"].get(symbol), data, t, lang)
         for symbol in cfg["watchlist"]
     )
+    head = (
+        "<thead><tr>"
+        + _sortable(t("sp.fieldSymbol"))
+        + _sr_header(t("sp.colTrend"))
+        + _sortable(t("sp.colPrice"), numeric=True)
+        + _sr_header(t("sp.colActions"))
+        + "</tr></thead>"
+    )
     return (
-        f'<div class="sb-list">{rows}</div>'
+        '<div class="sb-table-wrap" role="region" tabindex="0"'
+        ' aria-labelledby="sp-watch-caption">'
+        '<table class="sb-table sb-table--hover" id="sp-watch">'
+        '<caption class="sb-sr-only" id="sp-watch-caption">'
+        f'{escape(t("sp.watchCaption"))}</caption>'
+        f'{head}<tbody>{rows}</tbody></table></div>'
         f'<p class="sb-meta">{escape(t("sp.watchHint"))}</p>'
     )
 

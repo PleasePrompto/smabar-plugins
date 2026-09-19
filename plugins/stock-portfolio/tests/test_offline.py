@@ -504,6 +504,19 @@ class Markup(unittest.TestCase):
         self.assertIn('data-action="pick" data-value="AAPL"', html)
         self.assertIn('data-action="remove-watch"', html)
 
+    def test_watchlist_is_a_table_with_symbol_trend_price_and_actions(self):
+        quotes = {"AAPL": quote("AAPL", 10.0, 9.0, "EUR", name="Apple Inc.", points=[9.0, 10.0])}
+        c = cfg(watchlist=["AAPL", "MSFT"], symbols=["AAPL", "MSFT"])
+        html = views.flyout(data(quotes=quotes, tab="watchlist", tabChosen=True), c, t, "en")
+        table = html[html.index('id="sp-watch"'):]
+        self.assertEqual(table.count("<th "), 4)
+        body = table[table.index("<tbody>"):]
+        self.assertEqual(body.count("<tr>"), 2)  # a row even without a quote
+        self.assertIn("sb-badge-warning", table)
+        # price over its day change in one numeric cell
+        self.assertRegex(table, r'sb-table__num"><span class="sb-mono">10\.00\u00a0\u20ac</span><br><span class="sb-badge sb-badge-success"')
+        self.assertIn('data-chart="sparkline"', table)
+
     def test_table_has_six_columns_and_one_row_per_holding(self):
         quotes = {"AAPL": quote("AAPL", 200.0, 190.0, "EUR", name="Apple Inc.")}
         c = cfg(positions=[{"symbol": "AAPL", "shares": 2.0, "buyPrice": 100.0}], symbols=["AAPL"])

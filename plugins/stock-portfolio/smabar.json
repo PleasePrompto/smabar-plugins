@@ -1,7 +1,7 @@
 {
   "id": "stock-portfolio",
   "name": "Stock Portfolio",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Portfolio value, day change and gain/loss for your holdings, plus live quotes for a watchlist of stocks and indices",
   "protocolVersion": 1,
   "runtime": "python",

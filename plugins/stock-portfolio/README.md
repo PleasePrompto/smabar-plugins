@@ -9,7 +9,7 @@ What your holdings are worth, right on the bar: portfolio value and day change, 
 - **Tile:** the portfolio value with its day change in one of four cover layouts (`statSplit`, `dualText`, `segmentHeader`, `basic`). `statSplit` draws the value curve of your last updates next to the change; until there are enough updates it shows the absolute day move instead. Optionally the tile rolls through the total and every tracked symbol.
 - **Flyout:** three tabs with counts in their labels.
   - *Holdings* — a hero that follows the day: green on a gaining day, red on a losing one, with the value, the change as a badge and in money, and the value curve. Four KPIs beside it: today, total gain, invested, and the top mover of the day. Below, the table with initials avatar, shares × price, value, day and gain, sortable by column, with edit and remove per row (also in the right-click menu). Without holdings there is an empty state with a button straight into the Add tab.
-  - *Watchlist* — quotes without a holding: price, change badge and an intraday sparkline. The **+** on a row turns a followed symbol into a holding.
+  - *Watchlist* — a table of quotes without a holding: symbol, intraday sparkline, and the price with its day change beneath. The **+** on a row turns a followed symbol into a holding.
   - *Add* — two steps: find the instrument (search, or one tap on DAX, S&P 500, Nasdaq 100, Apple, Microsoft), then decide: **Add to portfolio** with a number of shares, or **Only follow it**. While the search runs, placeholder rows stand in; a search without a match shows an empty state, not an error. A plugin with nothing tracked opens on this tab.
 
 ![Watchlist with sparklines](screenshots/02-watchlist.png)
