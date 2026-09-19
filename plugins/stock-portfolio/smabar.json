@@ -1,0 +1,105 @@
+{
+  "id": "stock-portfolio",
+  "name": "Stock Portfolio",
+  "version": "1.2.0",
+  "description": "Portfolio value, day change and gain/loss for your holdings, plus live quotes for a watchlist of stocks and indices",
+  "protocolVersion": 1,
+  "runtime": "python",
+  "entry": "plugin.py",
+  "tiles": [
+    {
+      "id": "portfolio",
+      "name": "Stock Portfolio",
+      "hasFlyout": true,
+      "usePluginIcon": false,
+      "tileScale": "m"
+    }
+  ],
+  "settingsSchema": {
+    "type": "object",
+    "description": "Settings of the stock portfolio plugin. Holdings are edited in the plugin flyout.",
+    "properties": {
+      "positions": {
+        "type": "array",
+        "description": "Your holdings. Structured entries are edited in the plugin flyout (Manage tab), not here.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "description": "Provider symbol, e.g. \"AAPL\", \"SAP.DE\", \"VWCE.DE\""
+            },
+            "shares": {
+              "type": "number",
+              "description": "Number of shares held"
+            },
+            "buyPrice": {
+              "type": "number",
+              "description": "Average purchase price per share, in the symbol's own currency; 0 hides the total gain"
+            }
+          },
+          "required": [
+            "symbol",
+            "shares"
+          ],
+          "additionalProperties": false
+        },
+        "default": []
+      },
+      "watchlist": {
+        "type": "array",
+        "description": "Symbols quoted without a holding, e.g. \"^GDAXI\" (DAX), \"^GSPC\" (S&P 500), \"MSFT\"",
+        "items": {
+          "type": "string",
+          "description": "One provider symbol"
+        },
+        "uniqueItems": true,
+        "default": [
+          "^GDAXI",
+          "AAPL"
+        ]
+      },
+      "baseCurrency": {
+        "type": "string",
+        "description": "Currency of the portfolio total, e.g. \"EUR\", \"USD\", \"CHF\". Foreign holdings are converted with the provider's FX rate (Yahoo provider only).",
+        "default": "EUR"
+      },
+      "provider": {
+        "type": "string",
+        "description": "Quote source. \"yahoo\" needs no account (unofficial endpoint). \"finnhub\" needs a free API key in the plugin data folder, see the README.",
+        "enum": [
+          "yahoo",
+          "finnhub"
+        ],
+        "default": "yahoo"
+      },
+      "refreshMinutes": {
+        "type": "number",
+        "description": "Minutes between price updates; values below 1 are raised to 1 to stay inside the provider's rate limit",
+        "default": 5
+      },
+      "alertPercent": {
+        "type": "number",
+        "description": "A popup fires when a symbol moved this far (in percent, either direction) since its last alert; 0 disables alerts. This threshold is the only frequency control.",
+        "default": 0
+      },
+      "coverLayout": {
+        "type": "string",
+        "description": "How the bar tile shows the portfolio",
+        "enum": [
+          "statSplit",
+          "dualText",
+          "segmentHeader",
+          "basic"
+        ],
+        "default": "statSplit"
+      },
+      "tileRotate": {
+        "type": "boolean",
+        "description": "Roll the tile through the portfolio total and every tracked symbol instead of showing the total only",
+        "default": true
+      }
+    },
+    "additionalProperties": false
+  }
+}

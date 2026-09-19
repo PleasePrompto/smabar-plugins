@@ -24,6 +24,7 @@ Settings › Design › Community Themes inside the app.
 | [`plugins/quick-notes`](plugins/quick-notes) | Quick Notes: a scratchpad on the bar: jot a note in two seconds and find it again later. Plain Markdown files you can open in any editor. |
 | [`plugins/rss-ticker`](plugins/rss-ticker) | RSS Ticker: headlines from the feeds you choose, rotating on the bar, the full list one click away. |
 | [`plugins/uptime`](plugins/uptime) | Uptime: is it up? Your own sites, servers and services, checked from your machine, with a popup the moment one goes down. |
+| [`plugins/stock-portfolio`](plugins/stock-portfolio) | Stock Portfolio: what your holdings are worth, on the bar: portfolio value and day change, live quotes for a watchlist of stocks, ETFs and indices. Yahoo Finance without an account, Finnhub with a free key. |
 
 ## Themes
 
